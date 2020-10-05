@@ -1,0 +1,26 @@
+This experiment tests if cross-thread BTI works on SMT threads. 
+For this experiment, both threads are from the same process.
+
+In short, we want to see if STIBP in recent processors (Coffee Lake, onwards)
+which are supposed to have in-silico STIBP works. We also want to check if it
+is smart enough to allow BTI between threads of the same process.
+
+Let us discuss the config file:
+- PAGE_SIZE, CL_SIZE: Self-explainatory. Please set according to your processor.
+- ATTACK_CORE, VICTIM_CORE: Set according to your processor. Should be hyperthreads.
+  Eg. cores 1 and 5 on the 6700K.
+- N_EXPTS: Leave as 1 for now
+- FLUSH: This decides whether the victim function pointer will be flushed or not.
+  When set to 0, function pointer is not flushed, so no speculation at indirect jump.
+  When set to 1, function pointer is flushed, so there is speculation at indirect jump.
+
+Expected results:
+  On a processor-under-test, we need two runs: one with FLUSH=0 and another with FLUSH=1.
+  Generally, results are noisy (didnt investigate why) so run each config a few times.
+
+  For a vulnerable processor,
+  With FLUSH=0, we should consistently get high values.
+  With FLUSH=1, we should get low values most of the time.
+
+  For an invulnerable processor,
+  we should get consistently high values with both FLUSH=0 and FLUSH=1

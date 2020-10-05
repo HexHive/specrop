@@ -1,0 +1,66 @@
+This experiment tries to check for aliasing within the BTB.
+
+A processor uses previously seen targets for indirect jumps to 
+train the BTB. It stores these targets in a structure, along
+with a tag that identifies the RIP for the instruction that 
+generated that target. This tag might not contain all the bits
+to exactly identify an RIP. In other words, there might be other
+values of RIP which would have the same tag value. Instructions
+with aliasing RIPs may be used to train the BTB and poison a 
+later indirect jump.
+
+In this file, `run()` contains a victim's code. This does a 
+Flush+Reload on the first line of the FR_buffer. Between the 
+flush and reload, the function calls either of 
+`harmless_foo` or `malicious_foo`. Of these two, only the 
+malicious version contains the gadget that will trigger a 
+load to the cache line being checked.
+
+To test for aliasing, we copy the page containing the `run`
+function to a separate page at a VA with one bit of the address
+flipped. Then, the sequence of operations is as follows:
+
+- Run the attacker to poison the BTB by repeating the below 5 times
+  - Call `run` with the `ptr` to `malicious_foo`. 
+- Flush the `ptr` for the victim (removed for sanity check)
+- Run the victim 
+  - Call `run_copy` with the `ptr` to `harmless_foo`.
+
+First, we do a sanity check by removing step 2.
+In this case, run_copy does not speculate on the indirect jump 
+since the `ptr` has not been flushed. In this case, only
+the correct target `harmless_foo` is executed. 
+
+For the real experiment, we reinstate step 2. In this case, 
+the speculative target of the indirect jumps depends on 
+whether the address aliases with the attacker's (i.e. `run`).
+In case the addresses alias, the victim speculatively runs 
+`malicious_foo`, otherwise it stalls. Therefore, the 
+Flush+Reload only works when the addresses alias. We can detect
+this by the timing returned by `run`.
+
+We repeat the above by assigining `run_copy` to different addresses
+by individually flipping bits of the address of `run`. By iterating
+through bits 12-46, we see which bits are relevant for tagging in the
+BTB (these are the bits for which aliasing always fail). The 
+function `get_relevant_bits()` runs through this once and returns a 
+bitmask of which bits are used in the tag. Since BTI may 
+probabilistically fail, this bitmask is conservative and a superset
+of the actual bits which matter.
+
+Finally, the stuff in main repeats all of the above until it converges
+on a set of bits which matter and does not change over at least 5 runs.
+
+
+This was tested on a few architectures:
+- i7-6700K: The bitmask seems to be 0x1c000. There is a bit of noise here
+            and we get alternate bitmasks of 0x3e000.
+- i7-8700:  The bitmask is definitely 0x78000.
+- i7-9700:  Ditto
+
+The bitmask reveals which bits of the virtual address are used in the BTB
+addressing function. If flipping the bit in the addresses causes branch 
+poisoning to fail, that bit will be 1 in the bitmask. For a processor free
+of aliasing, the bitmask will be 0xfffffffff000.
+Of course, only half of the 48-bit VA is available to userspace, so we cannot 
+check if bit 48 is used.
