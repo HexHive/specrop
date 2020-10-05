@@ -1,0 +1,16 @@
+This folder contains a SMoTherSpectre-based attack which leaks full
+bytes compared to single bits leaked by the original attack. It 
+achieves this by shifting the secret by different widths by using
+processing gadgets.
+
+Running:
+- `./run.py`
+
+Outputs:
+- Folder `data/dat-YY-MM-DD_HH-MM-SS`
+  - Contains victim's secrets (`secret_bits.csv`), attacker's timing 
+    samples (`attacker_samples.csv`) and guesses (`attacker_bit_guesses.csv`).
+  - Contains a copy of the source used to generate this data in `src/` 
+  - `hist.png` showing distribution of attacker timings based on victim secrets
+  - Octave script `showme.m` which generates `hist.png`
+- Folder `latest/` which is a symlink to the last experiment results

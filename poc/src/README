@@ -1,0 +1,12 @@
+The configuration for the experiment is in `config.h`:
+- `CORE0` is one logical core in a SMT processor. The other
+  core used will be (`CORE0` + `NPROCS`/2). On a four core
+  SMT processor, this means that the attacker and victim
+  will run on cores 1 and 5 respectively.
+- The attacker will get `NSAMPLES` timing samples to guess
+  a single victim bit
+- Each secret has `NBITS=8` bits
+- There are a total of `NCHARS` secrets to be leaked
+- Finally, we can choose which set of SMoTher gadgets to use
+  by defining `GADGET_LAB` (a perfect, laboratory-made gadget)
+  or not (uses a real life gadget from `libc`).
