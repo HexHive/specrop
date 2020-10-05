@@ -1,0 +1,21 @@
+This experiment checks how many gadgets can be chained on a real processor,
+and described in detail in section 4.1.1 in the paper.
+
+The `main()` sets up a thread for the victim, and itself simulates the 
+attacker. Both call `routine()` with different arguments, leading
+to two different chains. They also flush an address, so that the victim 
+speculates.
+
+Setup:
+- config.h: Set the cores to be SMT logical cores on the same physical core.
+  For example, on a 4-core SMT processor, threads 1 and 5 might share a 
+  physical core. Defining HUGE_INST means that hugepages will be used For
+  instruction pages (for the gadgets, not the entire codebase).
+- You will require python3 with matplotlib installed.
+
+Running:
+
+To run this experiment, use `make run`. This assumes the current processor is
+named `expt` and will create a series of data files `chaining_results_expt_n`
+for n in [0,10). Then, it will run `process.py` which will create the graphs
+in Figure 3 in pdf and png format.
