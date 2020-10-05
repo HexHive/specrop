@@ -1,0 +1,15 @@
+Set CORE0 and CORE1 to be SMT cores.
+Run within `src/` folder as `sudo ./orchestrator`.
+
+For more setup steps, refer to the SMoTherSpectre 
+[repo](https://github.com/HexHive/SMoTHerSpectre).
+
+The octave script `plot_secret.m` plots the histograms
+of the attacker's timing depending on the victim's 
+secret values.
+
+The `inject_gadget.py` script is responsible for injecting
+the gadgets used in known locations, for reproducibility.
+You can verify the addresses of the gadgets (written in 
+comments in the script) with that of the actual generated
+binaries.
