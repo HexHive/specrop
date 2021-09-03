@@ -1,0 +1,18 @@
+This folder contains SpecFication gadget search tool example results, which
+compound both processing gadgets and leakage gadgets for concrete examples.  All
+the simple gadgets looked at must end on either an indirect jump or a return
+instruction in order to be able to build the ROP chain to be exploited
+speculatively.
+
+*NOTE* all the assembly code shown is in Intel syntax (destiny operand as the
+1st argument).
+
+All python dependencies are listed under requirements.txt file, to use
+SpecFication without system conflicts we recommend to create a virtual
+environment: https://docs.python.org/3/library/venv.html
+Inside the virtual environment you can install the requirements:
+https://pip.pypa.io/en/latest/user_guide/#requirements-files
+
+To test SpecFication against libcrypto from OpenSSL v1.1.1d, run: `python3
+main.py libcrypto.so.1.1` (on a Linux commodity OS, libcrypto is located under
+/usr/lib/x86_64-linux-gnu/libcrypto.so.1.1)

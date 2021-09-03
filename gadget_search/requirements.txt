@@ -1,0 +1,5 @@
+capstone==4.0.2
+pkg-resources==0.0.0
+pyelftools==0.27
+tqdm==4.62.2
+z3-solver==4.8.12.0
